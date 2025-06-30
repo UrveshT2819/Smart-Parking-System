@@ -1,54 +1,75 @@
-README: Car Parking System (Arduino-based)
-✅ Overview
-This project is an automated car parking system using Arduino, LCD display, IR sensors, and servos. It manages car entry and exit based on available parking space.
+# 🚗 Smart Car Parking Simulation (C++ Console Project)
 
-🔧 Components
-Arduino Uno/Nano
+This project simulates a **Smart Car Parking System** using standard C++ on the console. It mimics entry and exit of vehicles, gate control, and parking space tracking using simple menu-driven user interaction.
 
-16x2 LCD (I2C interface)
+---
 
-2x IR sensors (for detecting entry/exit)
+## 📌 Features
 
-2x Servo motors (for gates)
+- Simulates vehicle **entry and exit** using console input.
+- Tracks **available parking spaces** in real-time.
+- Displays gate operations and parking status like an LCD.
+- Simple menu-based interface for interaction.
+- Implements basic logic of embedded parking systems in C++.
 
-LEDs (for entry/exit indicators)
+---
 
-Jumper wires, breadboard
+## 🧰 Requirements
 
-⚙️ Pin Configuration
-Component	Arduino Pin
-IR Sensor 1	D2
-IR Sensor 2	D5
-Servo 1 (entry gate)	D8
-Servo 2 (exit gate)	D9
-Entry Green LED	D3
-Entry Red LED	D4
-Exit Green LED	D6
-Exit Red LED	D7
+- C++ Compiler (e.g. `g++`, `clang`, MSVC)
+- C++11 or later (uses `<thread>` and `<chrono>`)
 
-📟 LCD Display
-Line 1: Total number of parking slots
+---
 
-Line 2: Available spaces
+## 🛠️ How to Run
 
-🔁 Logic
-When IR sensor 1 is triggered and space is available:
+### 💻 On Linux / macOS / Windows (with g++)
 
-Entry gate opens, space count decreases.
+1. **Save the code** in a file called `parking_simulation.cpp`
+2. **Compile the program:**
+   ```bash
+   g++ parking_simulation.cpp -o parking
+3. **Run the program**:
+   ./parking
+🕹️ **Usage Instructions**
+When the program runs, it will display a menu:
+=== SMART CAR PARKING SIMULATION ===
+---------------------------
+Total Parking Spaces: 4
+Available Spaces:     4
+---------------------------
 
-When IR sensor 2 is triggered:
+Choose an action:
+1. Car Entry
+2. Car Exit
+3. Show Status
+0. Exit Program
 
-Exit gate opens, space count increases.
+**Press 1 to simulate a car entering the parking lot.
+Press 2 to simulate a car exiting.
+Press 3 to show the current parking status.
+Press 0 to quit the simulation.**
 
-If no space, "Sorry no space" is displayed.
+📂 **Project Structure**
+parking_simulation.cpp   // Main C++ source file
+README.md                // Project description and instructions
 
-After entry and exit, gates close automatically.
+🎓 **Educational Value**
+This project is a console-based simulation of a real-world embedded system (like Arduino + sensors + LCD) and is useful for:
+Understanding embedded logic in C++
+Simulating parking management without hardware
+Practicing console interaction, conditionals, and threading
 
-🧪 Usage
-Upload code to Arduino.
+🧠 **Future Enhancements**
+Add file logging for entry/exit history.
+Introduce random or timer-based IR triggers.
+Create a GUI version using Qt or SFML.
+Extend for multiple floors or dynamic slot allocation.
 
-Power up the circuit.
+📃 **License**
+This project is open-source and free to use for educational or personal purposes.
+🙋‍♂️ **Author
+Urvesh Thubrikar
+Project Type: C++ Console Simulation**
 
-Use objects to simulate vehicles over IR sensors.
 
-Watch the LCD update and gates open/close accordingly.

@@ -1,110 +1,81 @@
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-#include <Servo.h>
+#include <iostream>
+#include <thread>
+#include <chrono>
 
-LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD address 0x27, 16 columns, 2 rows
-
-Servo myservo1;
-Servo myservo2;
-
-int ir_s1 = 2; // Entry IR sensor
-int ir_s2 = 5; // Exit IR sensor
+using namespace std;
+using namespace std::chrono;
 
 int Total = 4;
-int Space;
-int flag1 = 0;
-int flag2 = 0;
+int Space = Total;
 
-void setup() {
-  pinMode(3, OUTPUT);  // Entry LED Green
-  pinMode(4, OUTPUT);  // Entry LED Red
-  pinMode(6, OUTPUT);  // Exit LED Green
-  pinMode(7, OUTPUT);  // Exit LED Red
-  
-  pinMode(ir_s1, INPUT);
-  pinMode(ir_s2, INPUT);
-
-  myservo1.attach(8); // Entry gate
-  myservo2.attach(9); // Exit gate (ADDED)
-  
-  myservo1.write(100); // Close entry gate
-  myservo2.write(100); // Close exit gate
-  
-  lcd.init();
-  lcd.backlight();
-
-  lcd.setCursor(0, 0);
-  lcd.print("  Car  Parking  ");
-  lcd.setCursor(0, 1);
-  lcd.print("     System     ");
-  delay(2000);
-  lcd.clear();
-
-  Space = Total;
+void lcdDisplay() {
+    cout << "---------------------------" << endl;
+    cout << "Total Parking Spaces: " << Total << endl;
+    cout << "Available Spaces:     " << Space << endl;
+    cout << "---------------------------" << endl;
 }
 
-void loop() {
-  digitalWrite(3, LOW);   // Entry Green LED OFF
-  digitalWrite(4, HIGH);  // Entry Red LED ON
-  digitalWrite(6, LOW);   // Exit Green LED OFF
-  digitalWrite(7, HIGH);  // Exit Red LED ON
-
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Total Space: ");
-  lcd.print(Total);
-
-  lcd.setCursor(0, 1);
-  lcd.print("Have  Space: ");
-  lcd.print(Space);
-  delay(1000);
-
-  // Entry IR sensor triggered
-  if (digitalRead(ir_s1) == LOW && flag1 == 0) {
+void entryGate() {
     if (Space > 0) {
-      flag1 = 1;
-      if (flag2 == 0) {
-        myservo1.write(0);   // Open gate
-        digitalWrite(3, HIGH); // Green LED ON
-        digitalWrite(4, LOW);  // Red LED OFF
-        Space = Space - 1;
-      }
+        cout << "\n[Entry IR] Car detected at Entry..." << endl;
+        cout << "[Gate] Opening Entry Gate..." << endl;
+        this_thread::sleep_for(seconds(2));
+        cout << "[Gate] Closing Entry Gate..." << endl;
+        Space--;
+        cout << "[LCD] Car Entered. Space Left: " << Space << endl;
     } else {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print(" Sorry no Space ");
-      lcd.setCursor(0, 1);
-      lcd.print("   Available     ");
-      delay(2000);
+        cout << "\n[Entry IR] Car detected but NO SPACE!" << endl;
+        cout << "[LCD] Sorry! No Space Available." << endl;
     }
-  }
-
-  // Exit IR sensor triggered
-  if (digitalRead(ir_s2) == LOW && flag2 == 0) {
-    flag2 = 1;
-    if (flag1 == 0) {
-      myservo2.write(0);   // Open exit gate
-      digitalWrite(6, HIGH); // Green LED ON
-      digitalWrite(7, LOW);  // Red LED OFF
-      Space = Space + 1;
-    }
-  }
-
-  // Reset both gates after both flags set
-  if (flag1 == 1 && flag2 == 1) {
-    delay(1000);
-    myservo1.write(100);
-    myservo2.write(100);
-    flag1 = 0;
-    flag2 = 0;
-  }
-
-  // Safety check
-  if (Space > Total) {
-    Space = Total;
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Total empty");
-    delay(2000);
-  }
+    lcdDisplay();
 }
+
+void exitGate() {
+    if (Space < Total) {
+        cout << "\n[Exit IR] Car detected at Exit..." << endl;
+        cout << "[Gate] Opening Exit Gate..." << endl;
+        this_thread::sleep_for(seconds(2));
+        cout << "[Gate] Closing Exit Gate..." << endl;
+        Space++;
+        cout << "[LCD] Car Exited. Space Left: " << Space << endl;
+    } else {
+        cout << "\n[Exit IR] No car parked. Can't exit!" << endl;
+    }
+    lcdDisplay();
+}
+
+int main() {
+    int choice;
+    cout << "=== SMART CAR PARKING SIMULATION ===" << endl;
+    lcdDisplay();
+
+    while (true) {
+        cout << "\nChoose an action:" << endl;
+        cout << "1. Car Entry" << endl;
+        cout << "2. Car Exit" << endl;
+        cout << "3. Show Status" << endl;
+        cout << "0. Exit Program" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                entryGate();
+                break;
+            case 2:
+                exitGate();
+                break;
+            case 3:
+                lcdDisplay();
+                break;
+            case 0:
+                cout << "Exiting simulation." << endl;
+                return 0;
+            default:
+                cout << "Invalid choice. Try again." << endl;
+        }
+    }
+
+    return 0;
+}
+
